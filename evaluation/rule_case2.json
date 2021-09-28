@@ -1,0 +1,14 @@
+{"mod": {"conditions": [{"name": "x2",
+                             "operator": "geq",
+                             "value": 0.6},
+                            {"name": "x3",
+                             "operator": "geq",
+                             "value": 0.25},
+                            {"name": "mod_1",
+                             "operator": "geq",
+                             "value": 1},
+                            {"name": "mod_2",
+                             "operator": "leq",
+                             "value": 600}],
+            "decision": "True"}
+}

@@ -1,0 +1,11 @@
+{"simple": {"conditions": [{"name": "x1",
+                             "operator": "leq",
+                             "value": 0.5},
+                            {"name": "x2",
+                             "operator": "geq",
+                             "value": 0.6},
+                            {"name": "x3",
+                             "operator": "geq",
+                             "value": 0.25}],
+            "decision": "True"}
+}
