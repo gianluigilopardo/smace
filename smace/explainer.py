@@ -57,37 +57,33 @@ class Smace:
         values.update(r_values)
         return values
 
-    def __explain_model__(self, example, model, method='shap'):
+    def __explain_model__(self, example, model, phi_model=None):
         input_features = list(self.dm.features)
         phi_values = {feature: 0 for feature in input_features}  # initialize importance as 0 for each input
         model_features = list(model.features)  # in general, model.features in input_features
         phi = 0
-        if method == 'shap':
+        if phi_model:
+            phi_dict = {k: v / self.data[model.name].std() for k, v in phi_model.items()}
+        else:  # shap
             data_summary = shap.sample(self.dm.data, 100)
             explainer = shap.KernelExplainer(model.predictor, data_summary)
             shap_values = explainer.shap_values(example)
             phi = shap_values
-        elif method == 'lime':
-            explainer = lime.lime_tabular.LimeTabularExplainer(self.dm.data.values,
-                                                               feature_names=model.features,
-                                                               discretize_continuous=True,
-                                                               verbose=True,
-                                                               mode=model.mode,
-                                                               )
-            exp = explainer.explain_instance(example, model.predictor, num_features=15)
-            phi = utils.lime_mapper(exp)
-        phi = phi / self.data[model.name].std()
-        phi_dict = {feature: phi[model_features.index(feature)] for feature in model_features}
+            phi = phi / self.data[model.name].std()
+            phi_dict = {feature: phi[model_features.index(feature)] for feature in model_features}
         phi_values.update(phi_dict)
         return phi_values
 
-    def explain(self, example, rule_name, num_features=15):
+    def explain(self, example, rule_name, phis=None):
         r = self.__rules_contribution__(example, rule_name)
         e = {feature: r[feature] for feature in self.dm.features}  # if no models
         phi = {}
+        phi_model = None
         for model in self.dm.models:
             if model.name in self.dm.rules[rule_name].actives:
-                phi[model.name] = self.__explain_model__(example, model)
+                if phis:
+                    phi_model = phis[model.name]
+                phi[model.name] = self.__explain_model__(example, model, phi_model)
                 e = {feature: (e[feature] + r[model.name] * phi[model.name][feature]) for feature in
                      self.dm.features}
         explanation = smace_explanation.SmaceExplanation(example, e, r, phi)
