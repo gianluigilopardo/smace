@@ -77,8 +77,9 @@ class DM:
         models = self.models
         full_data = data.copy()
         for model in models:
-            if model.mode == 'regression':  # and model.name in self.rules.actives:
-                full_data[model.name] = model.predict(data)
-            elif model.mode == 'classification':  # and model.name in self.rules.actives:
-                full_data[model.name] = model.predict_proba(data)[:, 1]
+            full_data[model.name] = model.predict(data)
+            # if model.mode == 'regression':  # and model.name in self.rules.actives:
+            #     full_data[model.name] = model.predict(data)
+            # elif model.mode == 'classification':  # and model.name in self.rules.actives:
+            #     full_data[model.name] = model.predict_proba(data)[:, 1]
         return full_data

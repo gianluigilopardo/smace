@@ -11,7 +11,6 @@ class SmaceExplanation:
         self.models = phi
 
     def table(self, num_features=15):
-        print(self.example)
         # return dataframe with overall contributions
         e = self.exp
         xi = self.example

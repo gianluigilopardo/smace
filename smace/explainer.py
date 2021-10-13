@@ -66,18 +66,13 @@ class Smace:
             data_summary = shap.sample(self.dm.data, 100)
             explainer = shap.KernelExplainer(model.predictor, data_summary)
             shap_values = explainer.shap_values(example)
-            if model.mode == 'classification':
-                phi = shap_values[1]
-            else:
-                phi = shap_values
+            phi = shap_values
         elif method == 'lime':
             explainer = lime.lime_tabular.LimeTabularExplainer(self.dm.data.values,
                                                                feature_names=model.features,
                                                                discretize_continuous=True,
                                                                verbose=True,
                                                                mode=model.mode,
-                                                               # !!! add categorical_features
-                                                               # and categorical_names
                                                                )
             exp = explainer.explain_instance(example, model.predictor, num_features=15)
             phi = utils.lime_mapper(exp)
