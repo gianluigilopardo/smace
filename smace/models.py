@@ -16,6 +16,14 @@ class Model:
         - preprocess: function to be applied to example if an intermediate preprocess is performed.
         """
 
+        assert isinstance(name, str), "Error: name must be a string!"
+        assert isinstance(df, pd.DataFrame), "Error: df must be a pandas DataFrame!"
+        if mode == 'regression':
+            assert getattr(model, "predict", None), "Error: model " + name + " does not have the method " \
+                                                                                     ".predict! "
+        elif mode == 'classification':
+            assert getattr(model, "predict_proba", None), "Error: model " + name + " does not have the method " \
+                                                                                           ".predict_proba! "
         self.model = model
         self.name = name
         self.df = df
@@ -34,6 +42,10 @@ class Model:
         if x.ndim == 1:
             x = np.expand_dims(x, 0)
         if self.mode == 'regression':
+            assert getattr(self, "predict", None), "Error: the model " + self.name + "does not have attribute " \
+                                                                                     ".predict! "
             return self.model.predict(x)
         elif self.mode == 'classification':
+            assert getattr(self, "predict_proba", None), "Error: the model " + self.name + "does not have attribute " \
+                                                                                           ".predict_proba! "
             return self.model.predict_proba(x)[:, 1]

@@ -6,10 +6,12 @@ import lime.lime_tabular
 
 from . import utils
 from . import smace_explanation
+from . import decisions
 
 
 class Smace:
     """ Explained object. """
+
     def __init__(self, dm):
         """ Build a new Explainer.
 
@@ -18,6 +20,7 @@ class Smace:
         - dm: DM Object
         """
 
+        assert isinstance(dm, decisions.DM), "Error: dm must be a DM Object!"
         self.dm = dm  # DM Object
         self.data = self.dm.full_data  # includes models output and input data
 

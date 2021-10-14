@@ -14,6 +14,9 @@ class Rule:
         - k: name of the rule to handle, key of the dictionary.
         """
 
+        assert isinstance(dict_rules[k], dict), "Error: the rule " + k + " is not in the right format!"
+        assert 'conditions' in dict_rules[k], "Error: the rule " + k + " does not have the key 'conditions'!"
+        assert 'decision' in dict_rules[k], "Error: the rule " + k + " does not have the key 'decision'!"
         self.dict_rules = dict_rules
         self.name = k
         self.rule = dict_rules[k]
@@ -30,6 +33,9 @@ class Rule:
         values = []
         labels = []
         for condition in self.conditions:
+            assert 'name' in condition, "Error: " + self.name + " conditions are missing the key 'name'!"
+            assert 'value' in condition, "Error: " + self.name + " conditions are missing the key 'value'!"
+            assert 'operator' in condition, "Error: " + self.name + " conditions are missing the key 'operator'!"
             variable = condition['name']
             variables.append(variable)
             value = condition['value']

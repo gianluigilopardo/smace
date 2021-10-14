@@ -2,22 +2,27 @@ import numpy as np
 import pandas as pd
 
 from . import rules
-
+from . import models
 
 class DM:
     """ CLass for modelling the decision-making system. """
-    def __init__(self, rules_json, models, data):
+    def __init__(self, rules_json, model_list, data):
         """ Build a new decision-making system.
 
         Parameters
         ----------
         - rules_json: list of rules in json file, as described in README.md.
-        - models: list of Model objects.
+        - model_list: list of Model objects.
         - data: pandas dataframe containing input data, data.columns will be used as features.
         """
 
+        assert isinstance(rules_json, dict), "Error: rules_json must be a dictionary!"
+        assert isinstance(model_list, list), "Error: models must be a list of Model objects!"
+        for i in range(len(model_list)):
+            assert isinstance(model_list[i], models.Model), "Error: models must be a list of Model objects!"
+        assert isinstance(data, pd.DataFrame), "Error: data must be a pandas DataFrame!"
         self.rules = {k: rules.Rule(rules_json, k) for k in rules_json.keys()}  # manage rules as Rule objects
-        self.models = models
+        self.models = model_list
         self.data = data
         self.features = data.columns  # features used for explanation
         self.full_data = self.__run_models__(data)  # apply the models, complete data with their output
