@@ -3,7 +3,19 @@ import pandas as pd
 
 
 class Model:
+    """ Each model within the decision system. """
     def __init__(self, model, name, df, mode='regression', preprocess=None):
+        """ Define a new model, defined by a name.
+
+        Parameters
+        ----------
+        - model: sklearn model or any object with a .predict and/or .predict_proba method, trained on df.
+        - name: name of the model, the same used within the rules.
+        - df: pandas dataframe, training set for model.
+        - model: 'regression' or 'classification'. Only binary classification is supported.
+        - preprocess: function to be applied to example if an intermediate preprocess is performed.
+        """
+
         self.model = model
         self.name = name
         self.df = df

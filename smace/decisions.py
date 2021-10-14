@@ -5,13 +5,23 @@ from . import rules
 
 
 class DM:
+    """ CLass for modelling the decision-making system. """
     def __init__(self, rules_json, models, data):
-        self.rules = {k: rules.Rule(rules_json, k) for k in rules_json.keys()}
+        """ Build a new decision-making system.
+
+        Parameters
+        ----------
+        - rules_json: list of rules in json file, as described in README.md.
+        - models: list of Model objects.
+        - data: pandas dataframe containing input data, data.columns will be used as features.
+        """
+
+        self.rules = {k: rules.Rule(rules_json, k) for k in rules_json.keys()}  # manage rules as Rule objects
         self.models = models
         self.data = data
-        self.features = data.columns
-        self.full_data = self.__run_models__(data)
-        self.variables = self.full_data.columns
+        self.features = data.columns  # features used for explanation
+        self.full_data = self.__run_models__(data)  # apply the models, complete data with their output
+        self.variables = self.full_data.columns  # variables contains both input features and models output.
 
     def make_decision(self, example, verbose=False):
         if example.ndim > 1:
@@ -44,6 +54,7 @@ class DM:
         return np.array(decisions)
 
     def __decide_eval__(self, example):
+        # binary output, used for evaluation as it is required by other methods.
         for k, v in self.rules.items():
             z = [example[lbl] for lbl in v.actives]
             if (np.dot(v.A, z).T - v.b >= 0).all():
@@ -78,8 +89,4 @@ class DM:
         full_data = data.copy()
         for model in models:
             full_data[model.name] = model.predict(data)
-            # if model.mode == 'regression':  # and model.name in self.rules.actives:
-            #     full_data[model.name] = model.predict(data)
-            # elif model.mode == 'classification':  # and model.name in self.rules.actives:
-            #     full_data[model.name] = model.predict_proba(data)[:, 1]
         return full_data

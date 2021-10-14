@@ -9,11 +9,17 @@ from . import smace_explanation
 
 
 class Smace:
-    """ Smace Explainer
-    input: DM object"""
+    """ Explained object. """
     def __init__(self, dm):
+        """ Build a new Explainer.
+
+        Parameters
+        ----------
+        - dm: DM Object
+        """
+
         self.dm = dm  # DM Object
-        self.data = self.dm.full_data  # includes models output
+        self.data = self.dm.full_data  # includes models output and input data
 
     def __rules_contribution__(self, example, rule_name):
         rule = self.dm.rules[rule_name]

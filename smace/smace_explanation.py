@@ -2,9 +2,18 @@ import pandas as pd
 
 
 class SmaceExplanation:
-    """Object returned by explainers"""
+    """ Object returned by explainers. """
     def __init__(self, example, exp, r, phi):
-        # dictionaries for overall, rule, and models contributions
+        """ Create a new Explanation.
+
+        Parameters
+        ----------
+        - example: instance to be explained.
+        - exp: overall contributions.
+        - r: rule contributions
+        - phi: contributions for models
+        """
+
         self.example = example
         self.exp = exp
         self.rule = r
