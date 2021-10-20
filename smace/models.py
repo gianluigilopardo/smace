@@ -42,10 +42,10 @@ class Model:
         if x.ndim == 1:
             x = np.expand_dims(x, 0)
         if self.mode == 'regression':
-            assert getattr(self, "predict", None), "Error: the model " + self.name + "does not have attribute " \
+            assert getattr(self.model, "predict", None), "Error: the model " + self.name + " does not have attribute " \
                                                                                      ".predict! "
             return self.model.predict(x)
         elif self.mode == 'classification':
-            assert getattr(self, "predict_proba", None), "Error: the model " + self.name + "does not have attribute " \
+            assert getattr(self.model, "predict_proba", None), "Error: the model " + self.name + " does not have attribute " \
                                                                                            ".predict_proba! "
             return self.model.predict_proba(x)[:, 1]
