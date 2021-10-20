@@ -1,5 +1,5 @@
 # SMACE --- Semi-Model-Agnostic Contextual Explainer
-Python code for the Master thesis *Explainable AI for business decision-making*.
+Python code for the Master thesis [*Explainable AI for business decision-making*](https://webthesis.biblio.polito.it/19854/).
 
 SMACE is a new interpretability method for hybrid decision systems that aggregate multiple machine learning models through decision rules.
 It combines a geometric approach (for decision rules) with existing interpretability solutions (for machine learning models) to generate explanations based on feature importance.
