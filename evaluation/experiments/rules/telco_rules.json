@@ -1,0 +1,17 @@
+{"simple": {"conditions": [{"name": "Age",
+                             "operator": "leq",
+                             "value": 50},
+                            {"name": "ltv",
+                             "operator": "geq",
+                             "value": 500},
+                            {"name": "cr",
+                             "operator": "geq",
+                             "value": 0.5},
+                            {"name": "Usage",
+                             "operator": "geq",
+                             "value": 50},
+                            {"name": "Local",
+                             "operator": "leq",
+                             "value": 200}],
+            "decision": "True"}
+}

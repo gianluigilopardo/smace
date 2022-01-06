@@ -70,18 +70,15 @@ class Smace:
         input_features = list(self.dm.features)
         phi_values = {feature: 0 for feature in input_features}  # initialize importance as 0 for each input
         model_features = list(model.features)  # in general, model.features in input_features
-        phi = 0
         if phi_model:
             phi_sum = np.sum(np.abs(list(phi_model.values())))
             phi_dict = {k: v / phi_sum for k, v in phi_model.items()}
-            # phi_dict = {k: v / self.data[model.name].std() for k, v in phi_model.items()}
-        else:  # shap
+        else:  # KernelSHAP
             data_summary = shap.sample(self.dm.data, 100)
             explainer = shap.KernelExplainer(model.predictor, data_summary)
             shap_values = explainer.shap_values(example)
-            phi = shap_values
+            phi = np.abs(shap_values)
             phi = phi / np.sum(np.abs(shap_values))
-            # phi = phi / self.data[model.name].std()
             phi_dict = {feature: phi[model_features.index(feature)] for feature in model_features}
         phi_values.update(phi_dict)
         return phi_values
