@@ -1,26 +1,24 @@
-# Evaluation - Retention offer use case
+# Evaluation - Composite system with one linear model
 
+import json
 import numpy as np
 import pandas as pd
-import json
 import warnings
-import sys
-import os
-import logging
-import matplotlib.pyplot as plt
-
 import shap
 import lime.lime_tabular
-
-import xgboost as xgb
-import sklearn
+import sys
+from sklearn import linear_model
+import os
+import matplotlib.pyplot as plt
+import logging
 
 warnings.filterwarnings("ignore")
 SEED = 0
 np.random.seed(seed=SEED)
 
 # path here
-path = os.getcwd().replace('evaluation\\experiments', '')
+exp_path = os.path.join('evaluation', 'experiments')
+path = os.getcwd().replace(exp_path, '')
 sys.path.append(path)
 
 # SMACE
@@ -34,102 +32,57 @@ import utils as exp_utils
 
 N_example = 100
 N_sample = 1000
-to = 1
-rule_name = 'paper'
-local = True
+D = 6  # input features
 
-what = "telco_" + rule_name
+# decision rule
+rule_name = 'r02'
+rule_file = path + exp_path + '\\rules\\r02.json'
 
 # input data
-df = pd.read_csv('telco_data.csv').drop(columns={'ID'})
+data = np.random.rand(N_sample, D)
+df = pd.DataFrame(data)
+df.columns = ["x" + str(i) for i in range(D)]
+to = 1  # from 0 to 1
+local = True
+what = "one_linear_" + rule_name
 
 # decision rules
-with open('rules/telco_rule.json', 'r') as fp:
+with open(rule_file, 'r') as fp:
     rules_json = json.load(fp)
 
-# preprocess
-categorical_names = ['Gender', 'Status', 'Car Owner', 'Paymethod', 'LocalBilltype', 'LongDistanceBilltype']
-
-
-def df_prep(dataframe):
-    # String to numbers: {F,M} -> {0,1}
-    for feature in categorical_names:
-        le = sklearn.preprocessing.LabelEncoder()
-        le.fit(dataframe[feature].astype(str))
-        dataframe[feature] = le.transform(dataframe[feature].astype(str))
-    return dataframe
-
-
-# training data
-y_cr = df.CHURN
-y_ltv = df.LTV
-
-data = df_prep(df.drop(columns={'CHURN', 'LTV'}))
-categorical_features = []
-for cat in categorical_names:
-    categorical_features.append(list(data.columns).index(cat))
-
-# preprocess
-X = data.copy()
-for feature in categorical_names:
-    # ONE HOT ENCODING
-    # Adding the new columns
-    X = pd.concat([X, pd.get_dummies(X[feature], prefix=feature)], axis=1)
-    # Removing the old nominal variables
-    X.drop([feature], axis=1, inplace=True)
-X = X.values
 
 # models
-xgb_cr = xgb.XGBClassifier(objective='reg:logistic').fit(X, y_cr)
-xgb_ltv = xgb.XGBRegressor().fit(X, y_ltv)
+def f_1(x):
+    return -3 * x[:, 0] + 1 * x[:, 1] + 2 * x[:, 2]
 
 
-# preprocess for example
-def preprocess(x):
-    X = data.copy()
-    if x.ndim == 1:
-        x = np.expand_dims(list(x), axis=0)
-    x = pd.DataFrame(x, columns=list(X.columns))
-    x = df_prep(x)
-    X = X.append(x)
-    for feature in categorical_names:
-        # ONE HOT ENCODING
-        # Adding the new columns
-        X = pd.concat([X, pd.get_dummies(X[feature], prefix=feature)], axis=1)
-        # Removing the old nominal variables
-        X.drop([feature], axis=1, inplace=True)
-    return X.tail(x.shape[0]).values.astype(np.float)
+m1 = 'Model 1: -3*x0 + 1*x1 + 2*x2'
+print(m1)
 
+X = df.values
+y1 = f_1(X)
+reg1 = linear_model.LinearRegression()
+reg1.fit(X, y1)
 
-cr_mod = Model(xgb_cr, 'cr', data, mode='classification', preprocess=preprocess)
-ltv_mod = Model(xgb_ltv, 'ltv', data, mode='regression', preprocess=preprocess)
-
-models_list = [cr_mod, ltv_mod]
+model_1 = Model(reg1, 'mod_1', df)
+models_list = [model_1]
+N = len(models_list)
 
 # decision system
-dm = DM(rules_json, models_list, data)
-
+dm = DM(rules_json, models_list, df)
 
 # Initialize the explainers
 explainer = Smace(dm)
-data_summary = shap.sample(data, 100)
+data_summary = shap.sample(df, 100)
 shap_explainer = shap.KernelExplainer(dm.make_decision_eval, data_summary)
-lime_explainer = lime.lime_tabular.LimeTabularExplainer(data.values, feature_names=data.columns,
+lime_explainer = lime.lime_tabular.LimeTabularExplainer(df.values, feature_names=df.columns,
                                                         discretize_continuous=True, verbose=True,
-                                                        mode='classification',
-                                                        categorical_names=categorical_names,
-                                                        categorical_features=categorical_features)
-
-dec_avg = dm.make_decision_eval(data).mean()
+                                                        mode='classification')
+dec_avg = dm.make_decision_eval(df).mean()
 print('Decision avg: ', dec_avg)
 
-D = len(data.columns)
-N = len(models_list)
-print('D: ', str(D))
-print('N: ', str(N))
-
 # examples to explain
-random_example = data.copy()
+random_example = df.copy()
 example = random_example[dm.make_decision_eval(random_example) == 1 - to]
 full_example = dm.__run_models__(example)
 full_example['dist'] = 0
@@ -143,8 +96,7 @@ smace_eval, lime_eval, shap_eval, random_eval = None, None, None, None
 for i, xi in example.iterrows():
     print('\n', what, ' > i: ', i)
     print(xi)
-    print(cr_mod.predict(xi))
-    print(ltv_mod.predict(xi))
+    print(model_1.predict(xi))
     smace_exp = explainer.explain(xi, rule_name)
     explanation = smace_exp.exp
     shap_values = shap_explainer.shap_values(xi)
@@ -156,23 +108,22 @@ for i, xi in example.iterrows():
     exp['LIME'] = lime_values
     print(exp)
     print(e_rule)
-    print(smace_exp.model_table('cr'))
-    print(smace_exp.model_table('ltv'))
+    print(smace_exp.model_table('mod_1'))
     smace_rank = exp.SMACE[exp.SMACE < 0].sort_values(ascending=True).index
     shap_rank = exp.SHAP[exp.SHAP < 0].sort_values(ascending=True).index
     lime_rank = exp.LIME[exp.LIME < 0].sort_values(ascending=True).index
-    sample = exp_utils.perturb(xi, data, N_sample, dm, to, local=local, categorical_names=categorical_names)
+    sample = exp_utils.perturb(xi, df, N_sample, dm, to, local=local)
 
     if smace_eval is not None:
-        smace_eval = np.concatenate((smace_eval, exp_utils.evaluate(to, xi, sample, smace_rank, dm, N_sample, data)))
-        lime_eval = np.concatenate((lime_eval, exp_utils.evaluate(to, xi, sample, lime_rank, dm, N_sample, data)))
-        shap_eval = np.concatenate((shap_eval, exp_utils.evaluate(to, xi, sample, shap_rank, dm, N_sample, data)))
-        random_eval = np.concatenate((random_eval, exp_utils.evaluate(to, xi, sample, None, dm, N_sample, data)))
+        smace_eval = np.concatenate((smace_eval, exp_utils.evaluate(to, xi, sample, smace_rank, dm, N_sample, df)))
+        lime_eval = np.concatenate((lime_eval, exp_utils.evaluate(to, xi, sample, lime_rank, dm, N_sample, df)))
+        shap_eval = np.concatenate((shap_eval, exp_utils.evaluate(to, xi, sample, shap_rank, dm, N_sample, df)))
+        random_eval = np.concatenate((random_eval, exp_utils.evaluate(to, xi, sample, None, dm, N_sample, df)))
     else:
-        smace_eval = exp_utils.evaluate(to, xi, sample, smace_rank, dm, N_sample, data)
-        lime_eval = exp_utils.evaluate(to, xi, sample, lime_rank, dm, N_sample, data)
-        shap_eval = exp_utils.evaluate(to, xi, sample, shap_rank, dm, N_sample, data)
-        random_eval = exp_utils.evaluate(to, xi, sample, None, dm, N_sample, data)
+        smace_eval = exp_utils.evaluate(to, xi, sample, smace_rank, dm, N_sample, df)
+        lime_eval = exp_utils.evaluate(to, xi, sample, lime_rank, dm, N_sample, df)
+        shap_eval = exp_utils.evaluate(to, xi, sample, shap_rank, dm, N_sample, df)
+        random_eval = exp_utils.evaluate(to, xi, sample, None, dm, N_sample, df)
 
 eval_ = pd.DataFrame()
 eval_['SMACE'] = smace_eval.mean(0)
@@ -213,6 +164,7 @@ plt.savefig(fname=str(file + '.pdf'))
 # log
 logging.basicConfig(format='%(message)s', filename=str(file) + ".log", level=logging.INFO)
 logging.info(what + '\n')
+logging.info('MODELS: \n' + m1 + '\n')
 logging.info('RULE: ' + str(dm.rules[rule_name].labels) + '\n')
 logging.info('Decision avg: ' + str(dec_avg) + '\n')
 logging.info('Local sampling: ' + str(local) + '\n')

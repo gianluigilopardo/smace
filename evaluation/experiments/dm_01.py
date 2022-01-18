@@ -1,4 +1,4 @@
-# Evaluation - Composite system with two linear models
+# Evaluation - Composite system
 
 import json
 import numpy as np
@@ -11,6 +11,7 @@ from sklearn import linear_model
 import os
 import matplotlib.pyplot as plt
 import logging
+import xgboost as xgb
 
 warnings.filterwarnings("ignore")
 SEED = 0
@@ -29,13 +30,13 @@ from smace import utils
 # experiments
 import utils as exp_utils
 
-N_example = 1000
+N_example = 100
 N_sample = 1000
-D = 6  # input features
+D = 10  # input features
 
 # decision rule
-rule_file = path + '\evaluation\\experiments\\rules\\r01.json'
-rule_name = 'r01'
+rule_file = path + '\evaluation\\experiments\\rules\\r03.json'
+rule_name = 'r03'
 
 # input data
 data = np.random.rand(N_sample, D)
@@ -43,7 +44,7 @@ df = pd.DataFrame(data)
 df.columns = ["x" + str(i) for i in range(D)]
 to = 1  # from 0 to 1
 local = True
-what = "composite_linear/" + rule_name + "_1000_" + str(SEED)
+what = "dm_01_" + rule_name
 
 # decision rules
 with open(rule_file, 'r') as fp:
@@ -52,10 +53,10 @@ with open(rule_file, 'r') as fp:
 
 # models
 def f_1(x):
-    return -3 * x[:, 0] + 1 * x[:, 1] + 2 * x[:, 2]
+    return -3 * x[:, 0] * x[:, 1] + 2 * x[:, 3] ** 2 + 10 * np.exp(x[:, 4])
 
 
-m1 = 'Model 1: -3*x0 + 1*x1 + 2*x2'
+m1 = 'Model 1: -3*x0*x1 + 2*x3^2 + 10*exp(x4)'
 print(m1)
 
 
@@ -69,11 +70,11 @@ print(m2)
 X = df.values
 y1 = f_1(X)
 y2 = f_2(X)
-reg1 = linear_model.LinearRegression()
-reg1.fit(X, y1)
+xgb_1 = xgb.XGBRegressor()
+xgb_1.fit(X, y1)
 reg2 = linear_model.LinearRegression()
 reg2.fit(X, y2)
-model_1 = Model(reg1, 'mod_1', df)
+model_1 = Model(xgb_1, 'mod_1', df)
 model_2 = Model(reg2, 'mod_2', df)
 models_list = [model_1, model_2]
 N = len(models_list)
@@ -96,9 +97,10 @@ random_example = df.copy()
 example = random_example[dm.make_decision_eval(random_example) == 1 - to]
 full_example = dm.__run_models__(example)
 full_example['dist'] = 0
-scale = dm.full_data.max()-dm.full_data.min()
+scale = dm.full_data.max() - dm.full_data.min()
 for i, row in full_example.iterrows():
-    full_example.dist.loc[i] = np.linalg.norm((row[dm.rules[rule_name].variables] - dm.rules[rule_name].values) / scale, 2)
+    full_example.dist.loc[i] = np.linalg.norm((row[dm.rules[rule_name].variables] - dm.rules[rule_name].values) / scale,
+                                              2)
 example = example.loc[full_example.sort_values('dist')[:N_example].index].reset_index(drop=True)
 
 # evaluation
@@ -136,9 +138,6 @@ for i, xi in example.iterrows():
         lime_eval = exp_utils.evaluate(to, xi, sample, lime_rank, dm, N_sample, df)
         shap_eval = exp_utils.evaluate(to, xi, sample, shap_rank, dm, N_sample, df)
         random_eval = exp_utils.evaluate(to, xi, sample, None, dm, N_sample, df)
-    print('SMACE: ', smace_rank, '- ', smace_eval.mean(0))
-    print('SHAP:', shap_rank, '- ', shap_eval.mean(0))
-    print('LIME: ', lime_rank, '- ', lime_eval.mean(0))
 
 eval_ = pd.DataFrame()
 eval_['SMACE'] = smace_eval.mean(0)

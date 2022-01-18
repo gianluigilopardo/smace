@@ -1,4 +1,4 @@
-{"simple": {"conditions": [{"name": "Age",
+{"paper": {"conditions": [{"name": "Age",
                              "operator": "leq",
                              "value": 50},
                             {"name": "ltv",
