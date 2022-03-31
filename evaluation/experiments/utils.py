@@ -25,6 +25,8 @@ def perturb(xi, df, N_sample, dm, to, local=True, categorical_names=None):
     scale = df.std()
     a, b = (df.min() - xi) / scale, (df.max() - xi) / scale
     if local:
+        print(a)
+        print(b)
         sample = truncnorm.rvs(a, b, loc=xi, scale=scale, size=[N_sample, len(xi)])
         sample = pd.DataFrame(sample)
         sample.columns = df.columns

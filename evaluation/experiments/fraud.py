@@ -7,9 +7,9 @@ import warnings
 import sys
 import os
 
-import pickle
 import logging
 import matplotlib.pyplot as plt
+import pickle
 
 import shap
 import lime.lime_tabular
@@ -40,17 +40,17 @@ to = 1
 rule_name = 'paper'
 local = True
 
-what = "telco_" + rule_name
+what = "fraud_" + rule_name
 
 # input data
-df = pd.read_csv('telco_data.csv').drop(columns={'ID'})
+df = pd.read_csv('fraud_data.csv').sample(10000).reset_index(drop=True)  # original data is huge
 
 # decision rules
-with open('rules/telco_rule.json', 'r') as fp:
+with open('rules/fraud_rule.json', 'r') as fp:
     rules_json = json.load(fp)
 
 # preprocess
-categorical_names = ['Gender', 'Status', 'Car Owner', 'Paymethod', 'LocalBilltype', 'LongDistanceBilltype']
+categorical_names = ['type']
 
 
 def df_prep(dataframe):
@@ -63,10 +63,9 @@ def df_prep(dataframe):
 
 
 # training data
-y_cr = df.CHURN
-y_ltv = df.LTV
+y = df.isFraud
 
-data = df_prep(df.drop(columns={'CHURN', 'LTV'}))
+data = df_prep(df.drop(columns={'isFraud', 'isFlaggedFraud', 'nameOrig', 'nameDest'}))
 categorical_features = []
 for cat in categorical_names:
     categorical_features.append(list(data.columns).index(cat))
@@ -82,8 +81,7 @@ for feature in categorical_names:
 X = X.values
 
 # models
-xgb_cr = xgb.XGBClassifier(objective='reg:logistic').fit(X, y_cr)
-xgb_ltv = xgb.XGBRegressor().fit(X, y_ltv)
+xgb_fraud = xgb.XGBClassifier(objective='reg:logistic').fit(X, y)
 
 
 # preprocess for example
@@ -103,14 +101,12 @@ def preprocess(x):
     return X.tail(x.shape[0]).values.astype(np.float)
 
 
-cr_mod = Model(xgb_cr, 'cr', data, mode='classification', preprocess=preprocess)
-ltv_mod = Model(xgb_ltv, 'ltv', data, mode='regression', preprocess=preprocess)
+fraud_mod = Model(xgb_fraud, 'fraud_risk', data, mode='classification', preprocess=preprocess)
 
-models_list = [cr_mod, ltv_mod]
+models_list = [fraud_mod]
 
 # decision system
 dm = DM(rules_json, models_list, data)
-
 
 # Initialize the explainers
 explainer = Smace(dm)
@@ -135,9 +131,10 @@ random_example = data.copy()
 example = random_example[dm.make_decision_eval(random_example) == 1 - to]
 full_example = dm.__run_models__(example)
 full_example['dist'] = 0
-scale = dm.full_data.max()-dm.full_data.min()
+scale = dm.full_data.max() - dm.full_data.min()
 for i, row in full_example.iterrows():
-    full_example.dist.loc[i] = np.linalg.norm((row[dm.rules[rule_name].variables] - dm.rules[rule_name].values) / scale, 2)
+    full_example.dist.loc[i] = np.linalg.norm((row[dm.rules[rule_name].variables] - dm.rules[rule_name].values) / scale,
+                                              2)
 example = example.loc[full_example.sort_values('dist')[:N_example].index].reset_index(drop=True)
 
 # evaluation
@@ -145,8 +142,7 @@ smace_eval, lime_eval, shap_eval, random_eval = None, None, None, None
 for i, xi in example.iterrows():
     print('\n', what, ' > i: ', i)
     print(xi)
-    print(cr_mod.predict(xi))
-    print(ltv_mod.predict(xi))
+    print(fraud_mod.predict(xi))
     smace_exp = explainer.explain(xi, rule_name)
     explanation = smace_exp.exp
     shap_values = shap_explainer.shap_values(xi)
@@ -158,8 +154,7 @@ for i, xi in example.iterrows():
     exp['LIME'] = lime_values
     print(exp)
     print(e_rule)
-    print(smace_exp.model_table('cr'))
-    print(smace_exp.model_table('ltv'))
+    print(smace_exp.model_table('fraud_risk'))
     smace_rank = exp.SMACE[exp.SMACE < 0].sort_values(ascending=True).index
     shap_rank = exp.SHAP[exp.SHAP < 0].sort_values(ascending=True).index
     lime_rank = exp.LIME[exp.LIME < 0].sort_values(ascending=True).index
