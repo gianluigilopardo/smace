@@ -37,7 +37,11 @@ def perturb(xi, df, N_sample, dm, to, local=True, categorical_names=None):
         sample = pd.DataFrame(sample)
         sample.columns = df.columns
         if categorical_names:
-            sample[categorical_names] = df[categorical_names].sample(N_sample, replace=True).reset_index(drop=True)
+            sample[categorical_names] = (
+                df[categorical_names]
+                .sample(N_sample, replace=True)
+                .reset_index(drop=True)
+            )
     else:
         # sample = np.random.rand(N_sample, len(xi))
         sample = df.sample(N_sample, replace=True).reset_index(drop=True)
