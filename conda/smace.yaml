@@ -12,6 +12,8 @@ dependencies:
   # python
   - python >=3.9,<3.10
   - pip
+  - jupyter
+  - jupyterlab
   # tests (not yet implemented)
   #- pytest >6.2.2
   #- nose
