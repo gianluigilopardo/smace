@@ -5,8 +5,7 @@ decisions docstring
 import numpy as np
 import pandas as pd
 
-from . import rules
-from . import models
+from . import models, rules
 
 
 class DM:

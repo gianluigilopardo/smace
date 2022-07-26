@@ -3,13 +3,11 @@ explainer docstring
 """
 
 import cvxpy as cp
-import pandas as pd
 import numpy as np
+import pandas as pd
 import shap
 
-from . import utils
-from . import smace_explanation
-from . import decisions
+from . import decisions, smace_explanation, utils
 
 
 class Smace:
