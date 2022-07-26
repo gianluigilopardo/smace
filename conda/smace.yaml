@@ -12,7 +12,8 @@ dependencies:
   # python
   - python >=3.9,<3.10
   - pip
-  # tests
+  # tests/qa
+  - black
   - flake8
   - isort
   - pytest >6.2.2
