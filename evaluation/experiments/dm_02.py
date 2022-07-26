@@ -1,4 +1,8 @@
+#!/usr/bin/env python
+#
 # Evaluation - Composite system with one xgboost model
+#
+#
 
 import json
 import logging
@@ -12,7 +16,12 @@ import numpy as np
 import pandas as pd
 import shap
 import xgboost as xgb
-from sklearn import linear_model
+from smace import utils
+from smace.decisions import DM
+from smace.explainer import Smace
+from smace.models import Model
+
+import utils as exp_utils
 
 warnings.filterwarnings("ignore")
 SEED = 0
@@ -21,15 +30,6 @@ np.random.seed(seed=SEED)
 # path here
 path = os.getcwd().replace('evaluation\\experiments', '')
 sys.path.append(path)
-
-from smace import utils
-# SMACE
-from smace.decisions import DM
-from smace.explainer import Smace
-from smace.models import Model
-
-# experiments
-import utils as exp_utils
 
 N_example = 100
 N_sample = 1000
@@ -86,9 +86,10 @@ random_example = df.copy()
 example = random_example[dm.make_decision_eval(random_example) == 1 - to]
 full_example = dm.__run_models__(example)
 full_example['dist'] = 0
-scale = dm.full_data.max()-dm.full_data.min()
+scale = dm.full_data.max() - dm.full_data.min()
 for i, row in full_example.iterrows():
-    full_example.dist.loc[i] = np.linalg.norm((row[dm.rules[rule_name].variables] - dm.rules[rule_name].values) / scale, 2)
+    full_example.dist.loc[i] = np.linalg.norm((row[dm.rules[rule_name].variables] - dm.rules[rule_name].values) / scale,
+                                              2)
 example = example.loc[full_example.sort_values('dist')[:N_example].index].reset_index(drop=True)
 
 # evaluation

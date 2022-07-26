@@ -1,4 +1,8 @@
+#!/usr/bin/env python
+#
 # Evaluation - Composite system
+#
+#
 
 import json
 import logging
@@ -13,6 +17,12 @@ import pandas as pd
 import shap
 import xgboost as xgb
 from sklearn import linear_model
+from smace import utils
+from smace.decisions import DM
+from smace.explainer import Smace
+from smace.models import Model
+
+import utils as exp_utils
 
 warnings.filterwarnings("ignore")
 SEED = 0
@@ -21,15 +31,6 @@ np.random.seed(seed=SEED)
 # path here
 path = os.getcwd().replace('evaluation\\experiments', '')
 sys.path.append(path)
-
-from smace import utils
-# SMACE
-from smace.decisions import DM
-from smace.explainer import Smace
-from smace.models import Model
-
-# experiments
-import utils as exp_utils
 
 N_example = 100
 N_sample = 1000

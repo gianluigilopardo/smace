@@ -1,12 +1,17 @@
+#!/usr/bin/env python
+#
+#
+#
+
 import os
 import pickle
 
 import seaborn as sns
 from matplotlib import pyplot as plt
+from matplotlib.ticker import MaxNLocator
 
 # specific parameters
 sns.set_theme(style='darkgrid')
-from matplotlib.ticker import MaxNLocator
 
 # name = 'telco_paper'
 # title = 'Retention Offer'
@@ -51,4 +56,3 @@ plt.fill_between(data.index, data['SMACE'] - error['SMACE'], data['SMACE'] + err
                  alpha=alpha)
 filename = os.path.join(res_path, name)
 plt.savefig(fname=str(filename + '.pdf'), bbox_inches='tight', pad_inches=0)
-
