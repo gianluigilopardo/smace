@@ -49,8 +49,8 @@ class Smace:
         constraints = [A @ x - b >= 0]
         prob = cp.Problem(objective, constraints)
         # The optimal objective value is returned by `prob.solve()`.
-        problem = np.dot(A, z) - b
-        result = prob.solve()
+        _problem = np.dot(A, z) - b
+        _result = prob.solve()
         br = np.abs(np.dot(A, x.value) - b)
         nA = A.nonzero()[1]
         bx = []
