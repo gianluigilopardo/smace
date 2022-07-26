@@ -13,13 +13,14 @@ dependencies:
   - python >=3.9,<3.10
   - pip
   # tests/qa
-  - black
   - flake8
   - isort
   - pytest >6.2.2
   - nose
   - coverage
   - pip:
+      - black
+      - black[jupyter]
       - numpy ==1.20.3
       - pandas ==1.2.5
       - cvxpy ==1.1.15
