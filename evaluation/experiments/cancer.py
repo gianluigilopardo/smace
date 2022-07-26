@@ -1,19 +1,17 @@
 # Evaluation - Breast Cancer
 
+import json
+import logging
+import os
+import pickle
+import sys
+import warnings
+
+import lime.lime_tabular
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import json
-import warnings
-import sys
-import os
-
-import logging
-import matplotlib.pyplot as plt
-import pickle
-
 import shap
-import lime.lime_tabular
-
 from sklearn.linear_model import LogisticRegression
 
 warnings.filterwarnings("ignore")
@@ -24,11 +22,11 @@ np.random.seed(seed=SEED)
 path = os.getcwd().replace('evaluation\\experiments', '')
 sys.path.append(path)
 
+from smace import utils
 # SMACE
 from smace.decisions import DM
 from smace.explainer import Smace
 from smace.models import Model
-from smace import utils
 
 # experiments
 import utils as exp_utils

@@ -1,16 +1,17 @@
 # Evaluation - Composite system with one linear model
 
 import json
+import logging
+import os
+import sys
+import warnings
+
+import lime.lime_tabular
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import warnings
 import shap
-import lime.lime_tabular
-import sys
 from sklearn import linear_model
-import os
-import matplotlib.pyplot as plt
-import logging
 
 warnings.filterwarnings("ignore")
 SEED = 0
@@ -20,11 +21,11 @@ np.random.seed(seed=SEED)
 path = os.getcwd().replace('evaluation\\experiments', '')
 sys.path.append(path)
 
+from smace import utils
 # SMACE
 from smace.decisions import DM
 from smace.explainer import Smace
 from smace.models import Model
-from smace import utils
 
 # experiments
 import utils as exp_utils

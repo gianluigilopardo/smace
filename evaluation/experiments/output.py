@@ -1,5 +1,5 @@
-import pickle
 import os
+import pickle
 
 import seaborn as sns
 from matplotlib import pyplot as plt

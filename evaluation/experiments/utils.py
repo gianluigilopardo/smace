@@ -1,7 +1,8 @@
-from scipy.stats import truncnorm
+import random
+
 import numpy as np
 import pandas as pd
-import random
+from scipy.stats import truncnorm
 
 
 # result

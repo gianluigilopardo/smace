@@ -1,21 +1,19 @@
 # Evaluation - Retention offer use case
 
+import json
+import logging
+import os
+import pickle
+import sys
+import warnings
+
+import lime.lime_tabular
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import json
-import warnings
-import sys
-import os
-
-import pickle
-import logging
-import matplotlib.pyplot as plt
-
 import shap
-import lime.lime_tabular
-
-import xgboost as xgb
 import sklearn
+import xgboost as xgb
 
 warnings.filterwarnings("ignore")
 SEED = 0
@@ -25,11 +23,11 @@ np.random.seed(seed=SEED)
 path = os.getcwd().replace('evaluation\\experiments', '')
 sys.path.append(path)
 
+from smace import utils
 # SMACE
 from smace.decisions import DM
 from smace.explainer import Smace
 from smace.models import Model
-from smace import utils
 
 # experiments
 import utils as exp_utils
