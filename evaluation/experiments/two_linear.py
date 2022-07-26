@@ -28,7 +28,7 @@ SEED = 0
 np.random.seed(seed=SEED)
 
 # path here
-path = os.getcwd().replace("evaluation\\experiments", "")
+path = os.getcwd().replace(os.path.join("evaluation", "experiments"), "")
 sys.path.append(path)
 
 N_example = 100
@@ -36,7 +36,7 @@ N_sample = 1000
 D = 6  # input features
 
 # decision rule
-rule_file = path + "\evaluation\\experiments\\rules\\r03.json"
+rule_file = os.path.join(path, "evaluation", "experiments", "rules", "r03.json")
 rule_name = "r03"
 
 # input data

@@ -29,7 +29,7 @@ SEED = 0
 np.random.seed(seed=SEED)
 
 # path here
-path = os.getcwd().replace("evaluation\\experiments", "")
+path = os.getcwd().replace(os.path.join("evaluation", "experiments"), "")
 sys.path.append(path)
 
 N_example = 100
@@ -48,7 +48,7 @@ df = (
 )  # original data is huge
 
 # decision rules
-with open("rules/cancer_rule.json", "r") as fp:
+with open(os.path.join("rules", "cancer_rule.json"), "r") as fp:
     rules_json = json.load(fp)
 
 # preprocess
@@ -170,7 +170,7 @@ print(eval_)
 auc = 1 / 2 * (eval_.iloc[0] + 2 * eval_.iloc[1:-1].sum() + eval_.iloc[-1])
 print(auc)
 
-file = "results/" + what
+file = os.path.join("results", what)
 with open(file + ".log", "w"):
     pass
 
