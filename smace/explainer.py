@@ -1,4 +1,5 @@
 """
+explainer docstring
 """
 
 import cvxpy as cp

@@ -1,3 +1,8 @@
+"""
+rules docstring
+"""
+
+
 import numpy as np
 
 from . import utils
