@@ -1,3 +1,8 @@
+"""
+models docstring....
+"""
+
+
 import numpy as np
 import pandas as pd
 
@@ -20,10 +25,10 @@ class Model:
         assert isinstance(df, pd.DataFrame), "Error: df must be a pandas DataFrame!"
         if mode == 'regression':
             assert getattr(model, "predict", None), "Error: model " + name + " does not have the method " \
-                                                                                     ".predict! "
+                ".predict! "
         elif mode == 'classification':
             assert getattr(model, "predict_proba", None), "Error: model " + name + " does not have the method " \
-                                                                                           ".predict_proba! "
+                ".predict_proba! "
         self.model = model
         self.name = name
         self.df = df
@@ -43,9 +48,9 @@ class Model:
             x = np.expand_dims(x, 0)
         if self.mode == 'regression':
             assert getattr(self.model, "predict", None), "Error: the model " + self.name + " does not have attribute " \
-                                                                                     ".predict! "
+                ".predict! "
             return self.model.predict(x)
         elif self.mode == 'classification':
             assert getattr(self.model, "predict_proba", None), "Error: the model " + self.name + " does not have attribute " \
-                                                                                           ".predict_proba! "
+                ".predict_proba! "
             return self.model.predict_proba(x)[:, 1]

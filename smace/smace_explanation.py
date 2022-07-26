@@ -1,3 +1,8 @@
+"""
+smace_explanation docstring
+"""
+
+
 import pandas as pd
 
 
@@ -59,5 +64,5 @@ class SmaceExplanation:
     def model_bar(self, model_name, num_features=15):
         # return bar plot with model contributions
         return self.model_table(model_name).Contribution.reindex(self.table().Contribution.abs().
-                                                                   sort_values(ascending=True).index)[
-               -num_features:].plot.barh()
+                                                                 sort_values(ascending=True).index)[
+                                                                     -num_features:].plot.barh()

@@ -1,8 +1,13 @@
+"""
+decisions docstring
+"""
+
 import numpy as np
 import pandas as pd
 
 from . import rules
 from . import models
+
 
 class DM:
     """ CLass for modelling the decision-making system. """
