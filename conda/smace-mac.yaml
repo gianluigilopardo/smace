@@ -1,0 +1,37 @@
+#
+# minimal environment du run smace tests (for macOSX)
+#
+# pip packages are issued from requirements.txt
+#
+name: smace
+
+channels:
+  - conda-forge
+
+dependencies:
+  # python
+  - python >=3.9,<3.10
+  - pip
+  - xgboost
+  - jupyter
+  - jupyterlab
+  # tests (not yet implemented)
+  #- pytest >6.2.2
+  #- nose
+  #- coverage
+  - pip:
+      # qa
+      - black
+      - black[jupyter]
+      - flake8
+      - isort
+      # to run the example within the conda env
+      - numpy ==1.20.3
+      - pandas ==1.2.5
+      - cvxpy ==1.1.15
+      - shap ==0.39.0
+      - lime ==0.2.0.1
+      - matplotlib ==3.4.3
+      - xgboost ==1.4.2
+      - scikit-learn ==0.24.2
+      - scipy ==1.7.1
