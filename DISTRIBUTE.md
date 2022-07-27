@@ -80,7 +80,7 @@ python -m twine upload --repository-url https://test.pypi.org/legacy/ dist/smace
 
 ```
 USER   = __token__
-PASSWD = pypi-AgENdGVzdC5weXBpLm9yZwIkZTA2MmFiMzItYWE0OC00MGU4LTkxMzctNWQyMDE3ZDc2MTk2AAIleyJwZXJtaXNzaW9ucyI6ICJ1c2VyIiwgInZlcnNpb24iOiAxfQAABiAQ8k2jsDpUQKqGyCNOwPYj55MS9eJvDfsmHD3PpYdXhA
+PASSWD = pypi-AgENdGetc....
 ```
 
 * project is now at:  https://test.pypi.org/project/smace/0.0/
@@ -98,7 +98,7 @@ pip install -i https://test.pypi.org/simple/ smace
 ```
 [pypi]
   username = __token__
-  password = pypi-AgEIcHlwaS5vcmcCJDFjZGIzYjM0LTQ2YTItNDYzZi1hZmI0LTZiMTVkM2E4NWNkMgACJXsicGVybWlzc2lvbnMiOiAidXNlciIsICJ2ZXJzaW9uIjogMX0AAAYgNlahB-dQuiQk12jjlPtNLCWaYE0q_XqGrPsavMM6sg8
+  password = pypi-AgEetc...
 ```
 
 * upload with
