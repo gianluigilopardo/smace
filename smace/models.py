@@ -1,11 +1,17 @@
+"""
+models docstring....
+"""
+
+
 import numpy as np
 import pandas as pd
 
 
 class Model:
-    """ Each model within the decision system. """
-    def __init__(self, model, name, df, mode='regression', preprocess=None):
-        """ Define a new model, defined by a name.
+    """Each model within the decision system."""
+
+    def __init__(self, model, name, df, mode="regression", preprocess=None):
+        """Define a new model, defined by a name.
 
         Parameters
         ----------
@@ -18,12 +24,14 @@ class Model:
 
         assert isinstance(name, str), "Error: name must be a string!"
         assert isinstance(df, pd.DataFrame), "Error: df must be a pandas DataFrame!"
-        if mode == 'regression':
-            assert getattr(model, "predict", None), "Error: model " + name + " does not have the method " \
-                                                                                     ".predict! "
-        elif mode == 'classification':
-            assert getattr(model, "predict_proba", None), "Error: model " + name + " does not have the method " \
-                                                                                           ".predict_proba! "
+        if mode == "regression":
+            assert getattr(model, "predict", None), (
+                "Error: model " + name + " does not have the method " ".predict! "
+            )
+        elif mode == "classification":
+            assert getattr(model, "predict_proba", None), (
+                "Error: model " + name + " does not have the method " ".predict_proba! "
+            )
         self.model = model
         self.name = name
         self.df = df
@@ -41,11 +49,15 @@ class Model:
             x = example
         if x.ndim == 1:
             x = np.expand_dims(x, 0)
-        if self.mode == 'regression':
-            assert getattr(self.model, "predict", None), "Error: the model " + self.name + " does not have attribute " \
-                                                                                     ".predict! "
+        if self.mode == "regression":
+            assert getattr(self.model, "predict", None), (
+                "Error: the model " + self.name + " does not have attribute "
+                ".predict! "
+            )
             return self.model.predict(x)
-        elif self.mode == 'classification':
-            assert getattr(self.model, "predict_proba", None), "Error: the model " + self.name + " does not have attribute " \
-                                                                                           ".predict_proba! "
+        elif self.mode == "classification":
+            assert getattr(self.model, "predict_proba", None), (
+                "Error: the model " + self.name + " does not have attribute "
+                ".predict_proba! "
+            )
             return self.model.predict_proba(x)[:, 1]

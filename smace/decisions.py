@@ -1,13 +1,18 @@
+"""
+decisions docstring
+"""
+
 import numpy as np
 import pandas as pd
 
-from . import rules
-from . import models
+from . import models, rules
+
 
 class DM:
-    """ CLass for modelling the decision-making system. """
+    """CLass for modelling the decision-making system."""
+
     def __init__(self, rules_json, model_list, data):
-        """ Build a new decision-making system.
+        """Build a new decision-making system.
 
         Parameters
         ----------
@@ -17,16 +22,26 @@ class DM:
         """
 
         assert isinstance(rules_json, dict), "Error: rules_json must be a dictionary!"
-        assert isinstance(model_list, list), "Error: models must be a list of Model objects!"
+        assert isinstance(
+            model_list, list
+        ), "Error: models must be a list of Model objects!"
         for i in range(len(model_list)):
-            assert isinstance(model_list[i], models.Model), "Error: models must be a list of Model objects!"
+            assert isinstance(
+                model_list[i], models.Model
+            ), "Error: models must be a list of Model objects!"
         assert isinstance(data, pd.DataFrame), "Error: data must be a pandas DataFrame!"
-        self.rules = {k: rules.Rule(rules_json, k) for k in rules_json.keys()}  # manage rules as Rule objects
+        self.rules = {
+            k: rules.Rule(rules_json, k) for k in rules_json.keys()
+        }  # manage rules as Rule objects
         self.models = model_list
         self.data = data
         self.features = data.columns  # features used for explanation
-        self.full_data = self.__run_models__(data)  # apply the models, complete data with their output
-        self.variables = self.full_data.columns  # variables contains both input features and models output.
+        self.full_data = self.__run_models__(
+            data
+        )  # apply the models, complete data with their output
+        self.variables = (
+            self.full_data.columns
+        )  # variables contains both input features and models output.
 
     def make_decision(self, example, verbose=False):
         if example.ndim > 1:
@@ -84,8 +99,16 @@ class DM:
             decisions = None
             triggered = None
         if verbose:
-            print(('Rule(s) ' + str(triggered) + ' triggered.') if triggered else 'No rules have been triggered.')
-            print(('Decision(s) ' + str(decisions) + ' made.') if decisions else 'No decision made.')
+            print(
+                ("Rule(s) " + str(triggered) + " triggered.")
+                if triggered
+                else "No rules have been triggered."
+            )
+            print(
+                ("Decision(s) " + str(decisions) + " made.")
+                if decisions
+                else "No decision made."
+            )
         self.triggered = triggered
         return decisions
 

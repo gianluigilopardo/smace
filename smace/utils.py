@@ -1,16 +1,20 @@
-import pandas as pd
+"""
+utils docstring
+"""
+
+
 import numpy as np
 
 
 def map_condition(operator):
-    if operator == 'gt':
-        condition = ' > '
-    elif operator == 'geq':
-        condition = ' >= '
-    elif operator == 'leq':
-        condition = ' <= '
-    elif operator == 'lt':
-        condition = ' < '
+    if operator == "gt":
+        condition = " > "
+    elif operator == "geq":
+        condition = " >= "
+    elif operator == "leq":
+        condition = " <= "
+    elif operator == "lt":
+        condition = " < "
     return condition
 
 
@@ -18,13 +22,13 @@ def map_constraints(operator, value):
     eps = 1e-14
     a = 0
     b = 0
-    if operator == 'gt':
+    if operator == "gt":
         a, b = 1 + eps, value
-    elif operator == 'geq':
+    elif operator == "geq":
         a, b = 1, value
-    elif operator == 'leq':
+    elif operator == "leq":
         a, b = -1, -value
-    elif operator == 'lt':
+    elif operator == "lt":
         a, b = -(1 + eps), -value
     return a, b
 
