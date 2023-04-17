@@ -140,3 +140,18 @@ explanation = explainer.explain(example, 'rule2')
 -   `explanation.model_table('mod')`  and  `explanation.model_bar('mod')`  to get the importance of input features to the model named  `'mod'`.
 
 It is possible to specify the maximum number of variables to display through the  `num_features`  parameters.
+
+
+## Citing this work
+If you use this code please cite
+
+```
+@inproceedings{lopardo2023smace,
+  title={SMACE: A New Method for the Interpretability of Composite Decision Systems},
+  author={Lopardo, Gianluigi and Garreau, Damien and Precioso, Fr{\'e}d{\'e}ric and Ottosson, Greger},
+  booktitle={Machine Learning and Knowledge Discovery in Databases: European Conference, ECML PKDD 2022, Grenoble, France, September 19--23, 2022, Proceedings, Part I},
+  pages={325--339},
+  year={2023},
+  organization={Springer}
+}
+```
